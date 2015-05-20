@@ -1,0 +1,205 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="2.0" xmlns:edmx="http://schemas.microsoft.com/ado/2008/10/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+    <Schema Namespace="Model.Store" Provider="System.Data.SqlServerCe.4.0" ProviderManifestToken="4.0" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/02/edm/ssdl">
+        <EntityType Name="positions">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="pixelxy" Type="nvarchar" MaxLength="100" Nullable="false" />
+          <Property Name="pname" Type="nvarchar" MaxLength="100" Nullable="false" />
+        </EntityType>
+        <EntityType Name="wifirouter">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="mac" Type="nvarchar" MaxLength="100" Nullable="false" />
+          <Property Name="name" Type="nvarchar" MaxLength="100" Nullable="false" />
+        </EntityType>
+        <EntityType Name="wifisignals">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="wifirouterID" Type="int" Nullable="false" />
+          <Property Name="positionID" Type="int" Nullable="false" />
+          <Property Name="signal" Type="int" Nullable="false" />
+        </EntityType>
+        <Association Name="positionID">
+          <End Role="positions" Type="Self.positions" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="wifisignals" Type="Self.wifisignals" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="positions">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="wifisignals">
+              <PropertyRef Name="positionID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="wifirouterID">
+          <End Role="wifirouter" Type="Self.wifirouter" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="wifisignals" Type="Self.wifisignals" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="wifirouter">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="wifisignals">
+              <PropertyRef Name="wifirouterID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="ModelStoreContainer">
+          <EntitySet Name="positions" EntityType="Self.positions" store:Type="Tables" />
+          <EntitySet Name="wifirouter" EntityType="Self.wifirouter" store:Type="Tables" />
+          <EntitySet Name="wifisignals" EntityType="Self.wifisignals" store:Type="Tables" />
+          <AssociationSet Name="positionID" Association="Self.positionID">
+            <End Role="positions" EntitySet="positions" />
+            <End Role="wifisignals" EntitySet="wifisignals" />
+          </AssociationSet>
+          <AssociationSet Name="wifirouterID" Association="Self.wifirouterID">
+            <End Role="wifirouter" EntitySet="wifirouter" />
+            <End Role="wifisignals" EntitySet="wifisignals" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema></edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="Model" Alias="Self" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2008/09/edm">
+        <EntityType Name="position">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="pixelxy" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="pname" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
+          <NavigationProperty Name="wifisignals" Relationship="Self.positionID" FromRole="positions" ToRole="wifisignals" />
+        </EntityType>
+        <EntityType Name="wifirouter">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="mac" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="name" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
+          <NavigationProperty Name="wifisignals" Relationship="Self.wifirouterID" FromRole="wifirouter" ToRole="wifisignals" />
+        </EntityType>
+        <EntityType Name="wifisignal">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="wifirouterID" Type="Int32" Nullable="false" />
+          <Property Name="positionID" Type="Int32" Nullable="false" />
+          <Property Name="signal" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="position" Relationship="Self.positionID" FromRole="wifisignals" ToRole="positions" />
+          <NavigationProperty Name="wifirouter" Relationship="Self.wifirouterID" FromRole="wifisignals" ToRole="wifirouter" />
+        </EntityType>
+        <Association Name="positionID">
+          <End Role="positions" Type="Self.position" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="wifisignals" Type="Self.wifisignal" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="positions">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="wifisignals">
+              <PropertyRef Name="positionID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="wifirouterID">
+          <End Role="wifirouter" Type="Self.wifirouter" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="wifisignals" Type="Self.wifisignal" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="wifirouter">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="wifisignals">
+              <PropertyRef Name="wifirouterID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="DBcontext" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="positions" EntityType="Self.position" />
+          <EntitySet Name="wifirouters" EntityType="Self.wifirouter" />
+          <EntitySet Name="wifisignals" EntityType="Self.wifisignal" />
+          <AssociationSet Name="positionID" Association="Self.positionID">
+            <End Role="positions" EntitySet="positions" />
+            <End Role="wifisignals" EntitySet="wifisignals" />
+          </AssociationSet>
+          <AssociationSet Name="wifirouterID" Association="Self.wifirouterID">
+            <End Role="wifirouter" EntitySet="wifirouters" />
+            <End Role="wifisignals" EntitySet="wifisignals" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2008/09/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="ModelStoreContainer" CdmEntityContainer="DBcontext">
+          <EntitySetMapping Name="positions">
+            <EntityTypeMapping TypeName="Model.position">
+              <MappingFragment StoreEntitySet="positions">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="pixelxy" ColumnName="pixelxy" />
+                <ScalarProperty Name="pname" ColumnName="pname" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="wifirouters">
+            <EntityTypeMapping TypeName="Model.wifirouter">
+              <MappingFragment StoreEntitySet="wifirouter">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="mac" ColumnName="mac" />
+                <ScalarProperty Name="name" ColumnName="name" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="wifisignals">
+            <EntityTypeMapping TypeName="Model.wifisignal">
+              <MappingFragment StoreEntitySet="wifisignals">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="wifirouterID" ColumnName="wifirouterID" />
+                <ScalarProperty Name="positionID" ColumnName="positionID" />
+                <ScalarProperty Name="signal" ColumnName="signal" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2008/10/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="true" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="true" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>
